@@ -1,0 +1,17 @@
+def get_play_store_app_details_using_app_id(app_id):
+    app_detail = play_scraper.details(app_id)
+    app_title = app_detail['title']
+    app_category = str(app_detail['category'])[1:-1].replace("'", "")
+    app_downloads = app_detail['installs']
+    app_total_reviews = app_detail['reviews']
+    app_avg_score = app_detail['score']
+    app_icon = app_detail['icon']
+    app_price = app_detail['price']
+    if app_price == "0":
+        app_price = 'Free'
+    app_developer_email = app_detail['developer_email']
+    app_developer_webiste = app_detail['developer_url']
+    app_developer_name = app_detail['developer']
+    app_play_store_url = app_detail['url']
+    app_platform = "Google-Play-Store"
+    return app_title, app_category, app_downloads, app_total_reviews, app_avg_score, app_icon, app_price, app_developer_email, app_developer_webiste, app_developer_name, app_play_store_url, app_platform
