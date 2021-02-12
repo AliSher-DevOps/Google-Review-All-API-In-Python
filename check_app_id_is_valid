@@ -1,0 +1,7 @@
+
+def play_store_app_package_name_is_valid(app_id):
+    try:
+        obj = play_scraper.details(app_id)
+        return True
+    except:
+        return False
