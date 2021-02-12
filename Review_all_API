@@ -1,0 +1,70 @@
+import argparse
+import time
+import json
+from oauth2client.service_account import ServiceAccountCredentials
+from apiclient.discovery import build
+import httplib2
+from oauth2client import client
+
+SERVICE_ACCOUNT_EMAIL = ('alisher@pc-api-4731752587261529931-554.iam.gserviceaccount.com')
+
+# Declare command-line flags.
+argparser = argparse.ArgumentParser(add_help=False)
+argparser.add_argument('com.mark.tictactoe',
+                   help='The package name. Example: com.android.sample')
+
+def main():
+  key='key.p12'
+  scope = 'https://www.googleapis.com/auth/androidpublisher'
+
+  credentials = ServiceAccountCredentials.from_p12_keyfile(
+      SERVICE_ACCOUNT_EMAIL,
+      key,
+      scopes=[scope]
+  )
+  http = httplib2.Http()
+  http = credentials.authorize(http)
+  service = build('androidpublisher', 'v3', http=http)
+  package_name = "com.mark.tictactoe"
+  reviews_request = service.reviews().list(packageName=package_name, maxResults=50)
+  reviews_result = reviews_request.execute()
+  review_id = []
+  comments = []
+  rating = [] 
+  author_name = []
+  time_date_month_year = []
+  language = []
+  thumbsUpCount = []
+  dict_reviews = reviews_result['reviews']
+  length_of_dict = len(dict_reviews)
+  sequence = range(length_of_dict)
+  for counter in sequence:
+            index = dict_reviews[counter]
+            review_id.append(index['reviewId'])
+            author_name.append(index['authorName'])
+            coments = index['comments']
+            coments_dict = coments[0]
+            coments_detail_dict = coments_dict['userComment']
+            comments.append(coments_detail_dict['text'])
+            seconds = coments_detail_dict['lastModified']
+            time_date_month_year.append(time.ctime(int(seconds['seconds']))) 
+            rating.append(coments_detail_dict['starRating'])
+            language.append(coments_detail_dict['reviewerLanguage'])
+            try:
+                thumbsUpCount.append(coments_detail_dict['thumbsUpCount'])
+            except:
+                thumbsUpCount.append(0)
+  return review_id, author_name, comments, rating, time_date_month_year, language,thumbsUpCount
+
+if __name__ == '__main__':
+  
+  review_id, author_name, comments, rating, time_date_month_year,language,thumbsUpCount = main()
+  for review_id, author_name, comments, rating, date, lang,thumbsUpCount in zip(review_id, author_name, comments, rating, time_date_month_year, language,thumbsUpCount):
+    print("ID ",review_id)
+    print("name ",author_name)
+    print("comment ",comments)
+    print("Score ",rating)
+    print("Date ",date)
+    print("Languge ",lang)
+    print("ThumbsUpCount",thumbsUpCount)
+    print('\n')
